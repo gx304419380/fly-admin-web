@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
-    <el-row>
-      <el-col :span="6">
+    <el-row style="height: 100%">
+      <el-col :span="6" style="padding-right: 20px; border-right: 2px solid #ccc">
         <el-input
           v-model="filterText"
           placeholder="输入关键字进行过滤"

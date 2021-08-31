@@ -4,11 +4,37 @@
       <el-col :span="6" style="padding-right: 20px; border-right: 2px solid #ccc">
         <group-tree
           :tree-data="treeData"
+          :tree-props="treeProps"
+          :checked-id="checkedNodeId"
           @node-click="handleNodeChange"
         />
       </el-col>
       <el-col :span="18">
-        {{ currentNode.label }}
+        <div style="padding-left: 20px; padding-top: 10px">
+          <div>
+            <span style="font-size: 18px">节点详情</span>
+            <el-button v-if="treeNode.permissionType === 1" size="small" type="primary" style="position: absolute;right:100px;top:0;" @click="editNode">保存</el-button>
+            <el-button v-if="treeNode.permissionType === 1" size="small" type="success" style="position: absolute;right:0;top:0;" @click="addChild">新增子节点</el-button>
+          </div>
+          <el-divider />
+          <div>
+            <el-form ref="nodeForm" v-loading="loadGroup" :model="currentNode" label-width="100" label-position="left">
+              <el-form-item label="组织名称">
+                <el-input v-model="currentNode.name" />
+              </el-form-item>
+              <el-form-item v-if="currentNode.id !== 'ORG_ROOT'" label="父节点">
+                <el-input disabled :value="getParentName(currentNode)" />
+              </el-form-item>
+              <el-form-item label="路径">
+                <el-input v-model="currentNode.namePath" disabled />
+              </el-form-item>
+              <el-form-item label="描述">
+                <el-input v-model="currentNode.description" type="textarea" :rows="4" maxlenght="200" show-word-limit />
+              </el-form-item>
+            </el-form>
+          </div>
+          <!--          <pre style="font-family: Consolas,serif">{{ JSON.stringify(currentNode, null, "\t") }}</pre>-->
+        </div>
       </el-col>
     </el-row>
   </div>
@@ -16,57 +42,72 @@
 
 <script>
 import GroupTree from '@/views/system/group/GroupTree'
+import * as GroupApi from '@/api/group'
 
 export default {
   components: { GroupTree },
   data() {
     return {
+      loadGroup: false,
+      checkedNodeId: null,
       currentNode: {},
-      treeData: [
-        {
-          id: 1,
-          icon: 'el-icon-eleme',
-          label: '一级 1',
-          children: [{
-            id: 4,
-            label: '二级 1-1',
-            icon: 'el-icon-phone',
-            children: [{
-              id: 9,
-              label: '三级 1-1-1',
-              icon: 'el-icon-eleme'
-            }, {
-              id: 10,
-              label: '三级 1-1-2'
-            }]
-          }]
-        }, {
-          id: 2,
-          label: '一级 2',
-          children: [{
-            id: 5,
-            label: '二级 2-1'
-          }, {
-            id: 6,
-            label: '二级 2-2'
-          }]
-        }, {
-          id: 3,
-          label: '一级 3',
-          children: [{
-            id: 7,
-            label: '二级 3-1'
-          }, {
-            id: 8,
-            label: '二级 3-2'
-          }]
-        }]
+      treeNode: {},
+      treeProps: {
+        children: 'children',
+        label: 'name'
+      },
+      treeData: []
     }
+  },
+  mounted() {
+    this.getTree()
   },
   methods: {
     handleNodeChange(node) {
-      console.log('node=', node)
-      this.currentNode = node
+      if (node === this.treeNode) {
+        return
+      }
+      this.treeNode = node
+      this.loadGroup = true
+      GroupApi.getGroup(node.id).then(res => {
+        this.currentNode = res.data
+      }).finally(() => {
+        this.loadGroup = false
+      })
+    },
+    getTree() {
+      GroupApi.getTree().then(res => {
+        this.treeData = res.data
+      })
+    },
+    editNode() {
+      this.loadGroup = true
+      GroupApi.saveGroup(this.currentNode).then(res => {
+        // toast success
+        this.$message.success('保存成功')
+
+        // click the updated node
+        this.checkedNodeId = this.currentNode.id
+
+        // refresh tree
+        this.getTree()
+      }).finally(() => {
+        this.loadGroup = false
+      })
+    },
+    addChild() {
+      console.log('add')
+    },
+    getParentName(node) {
+      const namePath = node.namePath
+      if (!namePath) {
+        return null
+      }
+
+      const split = namePath.split('/')
+      if (split.length > 3) {
+        return split[split.length - 3]
+      }
     }
   }
 }

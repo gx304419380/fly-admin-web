@@ -17,8 +17,8 @@
       @node-click="handleNodeClick"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
-        <span>
-          <i :class="data.icon" style="margin-right: 10px" />{{ node.label }}
+        <span :ref="'treeNode' + data.id">
+          <i :class="generateIcon(data)" style="margin-right: 10px" />{{ node.label }}
         </span>
       </span>
     </el-tree>
@@ -43,6 +43,12 @@ export default {
           disabled: 'disabled'
         }
       }
+    },
+    checkedId: {
+      type: String,
+      default() {
+        return null
+      }
     }
   },
   data() {
@@ -55,15 +61,18 @@ export default {
   watch: {
     filterText(val) {
       this.$refs.tree.filter(val)
+    },
+    treeData(val) {
+      this.expandOnClick = false
+      // 默认点击第一个
+      this.$nextTick().then(() => {
+        const checkNode = this.checkedId ? this.$refs['treeNode' + this.checkedId] : document.querySelector('.el-tree-node')
+        if (checkNode) {
+          checkNode.click()
+        }
+        this.expandOnClick = true
+      })
     }
-  },
-  mounted() {
-    // 默认点击第一个
-    this.$nextTick().then(() => {
-      const firstNode = document.querySelector('.el-tree-node')
-      firstNode.click()
-      this.expandOnClick = true
-    })
   },
   methods: {
     filterNode(value, data) {
@@ -72,6 +81,9 @@ export default {
     },
     handleNodeClick(node) {
       this.$emit('node-click', node)
+    },
+    generateIcon(data) {
+      return data.level === 1 ? 'el-icon-s-home' : 'el-icon-office-building'
     }
   }
 }

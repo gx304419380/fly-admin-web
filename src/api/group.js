@@ -1,5 +1,12 @@
 import request from '@/utils/request'
 
+export function deleteGroup(id) {
+  return request({
+    url: '/system/group/' + id,
+    method: 'delete'
+  })
+}
+
 export function saveGroup(group) {
   return request({
     url: '/system/group',

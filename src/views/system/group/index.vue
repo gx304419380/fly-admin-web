@@ -4,23 +4,23 @@
       <el-col :span="6" style="padding-right: 20px; border-right: 2px solid #ccc">
         <group-tree
           :tree-data="treeData"
-          :tree-props="treeProps"
           :checked-id="checkedNodeId"
           @node-click="handleNodeChange"
         />
       </el-col>
       <el-col :span="18">
-        <div style="padding-left: 20px; padding-top: 10px">
-          <div>
-            <span style="font-size: 18px">节点详情</span>
-            <el-button v-if="treeNode.permissionType === 1" size="small" type="primary" style="position: absolute;right:100px;top:0;" @click="editNode">保存</el-button>
-            <el-button v-if="treeNode.permissionType === 1" size="small" type="success" style="position: absolute;right:0;top:0;" @click="addChild">新增子节点</el-button>
+        <div style="padding-left: 20px;">
+          <div style="display: flex; justify-content: flex-end">
+            <span style="font-size: 18px; flex: 1; padding-top: 10px">节点详情</span>
+            <el-button v-if="treeNode.permissionType === 1" size="small" type="primary" @click="editNode">保存</el-button>
+            <el-button v-if="treeNode.permissionType === 1" size="small" type="success" @click="addChild">新增子节点</el-button>
+            <el-button v-if="treeNode.permissionType === 1 && treeNode.id !== 'ORG_ROOT'" type="danger" size="small" @click="deleteGroup">删除</el-button>
           </div>
           <el-divider />
-          <div>
-            <el-form ref="nodeForm" v-loading="loadGroup" :model="currentNode" label-width="100" label-position="left">
-              <el-form-item label="组织名称">
-                <el-input v-model="currentNode.name" />
+          <div :style="{overflow: 'auto', height: screenHeight - 160 + 'px'}">
+            <el-form ref="nodeForm" v-loading="loadGroup" :rules="groupRules" :model="currentNode" label-width="100" label-position="left">
+              <el-form-item label="组织名称" prop="name">
+                <el-input v-model="currentNode.name" maxlength="20" show-word-limit />
               </el-form-item>
               <el-form-item v-if="currentNode.id !== 'ORG_ROOT'" label="父节点">
                 <el-input disabled :value="getParentName(currentNode)" />
@@ -29,11 +29,21 @@
                 <el-input v-model="currentNode.namePath" disabled />
               </el-form-item>
               <el-form-item label="描述">
-                <el-input v-model="currentNode.description" type="textarea" :rows="4" maxlenght="200" show-word-limit />
+                <el-input v-model="currentNode.description" type="textarea" :rows="4" maxlength="200" show-word-limit />
               </el-form-item>
             </el-form>
           </div>
-          <!--          <pre style="font-family: Consolas,serif">{{ JSON.stringify(currentNode, null, "\t") }}</pre>-->
+          <el-drawer
+            title="新增子节点"
+            size="50%"
+            :visible.sync="addChildDrawer"
+            direction="rtl"
+            :before-close="closeChildDrawer"
+          >
+            <div style="padding: 20px">
+              <group-editor :parent="currentNode" @saveSuccess="addChildSuccess" />
+            </div>
+          </el-drawer>
         </div>
       </el-col>
     </el-row>
@@ -42,21 +52,27 @@
 
 <script>
 import GroupTree from '@/views/system/group/GroupTree'
+import GroupEditor from '@/views/system/group/GroupEditor'
 import * as GroupApi from '@/api/group'
 
 export default {
-  components: { GroupTree },
+  components: { GroupTree, GroupEditor },
   data() {
     return {
+      screenHeight: document.body.clientHeight,
       loadGroup: false,
       checkedNodeId: null,
+      addChildDrawer: false,
+      afterSaveOrUpdate: false,
       currentNode: {},
       treeNode: {},
-      treeProps: {
-        children: 'children',
-        label: 'name'
-      },
-      treeData: []
+      treeData: [],
+      groupRules: {
+        name: [
+          { required: true, message: '请输入名称', trigger: 'blur' },
+          { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
+        ]
+      }
     }
   },
   mounted() {
@@ -68,6 +84,11 @@ export default {
         return
       }
       this.treeNode = node
+      // 如果是刚刚更新或新增的节点，则无需请求
+      if (this.afterSaveOrUpdate) {
+        this.afterSaveOrUpdate = false
+        return
+      }
       this.loadGroup = true
       GroupApi.getGroup(node.id).then(res => {
         this.currentNode = res.data
@@ -88,15 +109,36 @@ export default {
 
         // click the updated node
         this.checkedNodeId = this.currentNode.id
-
+        this.currentNode = res.data
+        this.afterSaveOrUpdate = true
         // refresh tree
         this.getTree()
       }).finally(() => {
         this.loadGroup = false
       })
     },
+    deleteGroup() {
+      this.$confirm('确认删除？')
+        .then(_ => {
+          this.loadGroup = true
+          GroupApi.deleteGroup(this.currentNode.id).then(res => {
+            this.checkedNodeId = null
+            this.getTree()
+          }).finally(() => {
+            this.loadGroup = false
+          })
+        })
+        .catch(_ => {})
+    },
     addChild() {
-      console.log('add')
+      this.addChildDrawer = true
+    },
+    addChildSuccess(group) {
+      this.addChildDrawer = false
+      this.checkedNodeId = group.id
+      this.currentNode = group
+      this.afterSaveOrUpdate = true
+      this.getTree()
     },
     getParentName(node) {
       const namePath = node.namePath
@@ -108,10 +150,26 @@ export default {
       if (split.length > 3) {
         return split[split.length - 3]
       }
+    },
+    closeChildDrawer(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done()
+        })
+        .catch(_ => {})
     }
   }
 }
 </script>
 
 <style scoped>
+.el-divider--horizontal {
+  display: block;
+  height: 1px;
+  width: 100%;
+  margin: 12px 0;
+}
+/deep/ .el-form-item__label {
+  font-weight: 700;
+}
 </style>

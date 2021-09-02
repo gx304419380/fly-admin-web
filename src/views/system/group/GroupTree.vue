@@ -1,5 +1,5 @@
 <template>
-  <div :style="{height: screenHeight - 90 + 'px'}">
+  <div :style="{height: screenHeight - 90 + 'px', overflow: 'auto'}">
     <el-input
       v-model="filterText"
       placeholder="输入关键字进行过滤"
@@ -12,7 +12,7 @@
       default-expand-all
       :highlight-current="true"
       :filter-node-method="filterNode"
-      :expand-on-click-node="expandOnClick"
+      :expand-on-click-node="false"
       style="margin-top: 10px"
       @node-click="handleNodeClick"
     >
@@ -39,7 +39,7 @@ export default {
       default() {
         return {
           children: 'children',
-          label: 'label',
+          label: 'name',
           disabled: 'disabled'
         }
       }
@@ -54,7 +54,6 @@ export default {
   data() {
     return {
       screenHeight: document.body.clientHeight,
-      expandOnClick: false,
       filterText: ''
     }
   },
@@ -63,27 +62,32 @@ export default {
       this.$refs.tree.filter(val)
     },
     treeData(val) {
-      this.expandOnClick = false
       // 默认点击第一个
       this.$nextTick().then(() => {
         const checkNode = this.checkedId ? this.$refs['treeNode' + this.checkedId] : document.querySelector('.el-tree-node')
         if (checkNode) {
           checkNode.click()
         }
-        this.expandOnClick = true
       })
     }
   },
   methods: {
     filterNode(value, data) {
       if (!value) return true
-      return data.label.indexOf(value) !== -1
+      return data[this.treeProps.label].indexOf(value) !== -1
     },
     handleNodeClick(node) {
       this.$emit('node-click', node)
     },
     generateIcon(data) {
-      return data.level === 1 ? 'el-icon-s-home' : 'el-icon-office-building'
+      switch (data.level) {
+        case 1:
+          return 'el-icon-s-home'
+        case 2:
+          return 'el-icon-office-building'
+        default:
+          return 'el-icon-discount'
+      }
     }
   }
 }

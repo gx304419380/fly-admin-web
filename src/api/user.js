@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+export function getUserList(condition) {
+  return request({
+    url: '/system/user/page',
+    method: 'post',
+    data: condition
+  })
+}
+
 export function login(data) {
   return request({
     url: '/system/account/login',

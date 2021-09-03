@@ -1,27 +1,29 @@
 <template>
-  <div :style="{height: screenHeight - 90 + 'px', overflow: 'auto'}">
+  <div :style="{height: screenHeight - 100 + 'px', paddingBottom: '20px'}">
     <el-input
       v-model="filterText"
       placeholder="输入关键字进行过滤"
     />
-    <el-tree
-      ref="tree"
-      class="filter-tree"
-      :data="treeData"
-      :props="treeProps"
-      default-expand-all
-      :highlight-current="true"
-      :filter-node-method="filterNode"
-      :expand-on-click-node="false"
-      style="margin-top: 10px"
-      @node-click="handleNodeClick"
-    >
-      <span slot-scope="{ node, data }" class="custom-tree-node">
-        <span :ref="'treeNode' + data.id">
-          <i :class="generateIcon(data)" style="margin-right: 10px" />{{ node.label }}
+    <el-scrollbar class="custom-scroll">
+      <el-tree
+        ref="tree"
+        class="filter-tree"
+        :data="treeData"
+        :props="treeProps"
+        default-expand-all
+        :highlight-current="true"
+        :filter-node-method="filterNode"
+        :expand-on-click-node="false"
+        style="margin-top: 10px"
+        @node-click="handleNodeClick"
+      >
+        <span slot-scope="{ node, data }" class="custom-tree-node">
+          <span :ref="'treeNode' + data.id">
+            <i :class="generateIcon(data)" style="margin-right: 10px" />{{ node.label }}
+          </span>
         </span>
-      </span>
-    </el-tree>
+      </el-tree>
+    </el-scrollbar>
   </div>
 </template>
 
@@ -106,5 +108,9 @@ export default {
   justify-content: space-between;
   font-size: 15px;
   padding-right: 8px;
+}
+
+/deep/ .el-scrollbar__bar.is-vertical {
+  opacity: 1;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row style="height: 100%">
-      <el-col :span="6" style="padding-right: 20px; border-right: 2px solid #ccc">
+      <el-col :span="6" style="padding-right: 20px;">
         <group-tree
           :tree-data="treeData"
           :checked-id="checkedNodeId"
@@ -17,21 +17,31 @@
             <el-button v-if="treeNode.permissionType === 1 && treeNode.id !== 'ORG_ROOT'" type="danger" size="small" @click="deleteGroup">删除</el-button>
           </div>
           <el-divider />
-          <div :style="{overflow: 'auto', height: screenHeight - 160 + 'px'}">
-            <el-form ref="nodeForm" v-loading="loadGroup" :rules="groupRules" :model="currentNode" label-width="100" label-position="left">
-              <el-form-item label="组织名称" prop="name">
-                <el-input v-model="currentNode.name" maxlength="20" show-word-limit />
-              </el-form-item>
-              <el-form-item v-if="currentNode.id !== 'ORG_ROOT'" label="父节点">
-                <el-input disabled :value="getParentName(currentNode)" />
-              </el-form-item>
-              <el-form-item label="路径">
-                <el-input v-model="currentNode.namePath" disabled />
-              </el-form-item>
-              <el-form-item label="描述">
-                <el-input v-model="currentNode.description" type="textarea" :rows="4" maxlength="200" show-word-limit />
-              </el-form-item>
-            </el-form>
+          <div :style="{height: screenHeight - 160 + 'px'}">
+            <el-scrollbar class="custom-scroll">
+              <el-form
+                ref="nodeForm"
+                v-loading="loadGroup"
+                :rules="groupRules"
+                :model="currentNode"
+                label-width="100"
+                label-position="left"
+                style="margin-right: 10px"
+              >
+                <el-form-item label="组织名称" prop="name">
+                  <el-input v-model="currentNode.name" maxlength="20" show-word-limit />
+                </el-form-item>
+                <el-form-item v-if="currentNode.id !== 'ORG_ROOT'" label="父节点">
+                  <el-input disabled :value="getParentName(currentNode)" />
+                </el-form-item>
+                <el-form-item label="路径">
+                  <el-input v-model="currentNode.namePath" disabled />
+                </el-form-item>
+                <el-form-item label="描述">
+                  <el-input v-model="currentNode.description" type="textarea" :row="4" maxlength="200" show-word-limit />
+                </el-form-item>
+              </el-form>
+            </el-scrollbar>
           </div>
           <el-drawer
             title="新增子节点"
@@ -91,6 +101,7 @@ export default {
       }
       this.loadGroup = true
       GroupApi.getGroup(node.id).then(res => {
+        this.$refs.nodeForm.resetFields()
         this.currentNode = res.data
       }).finally(() => {
         this.loadGroup = false

@@ -64,3 +64,11 @@ div:focus {
   padding: 20px;
   height: 100%;
 }
+
+.custom-scroll {
+  height: 100%;
+}
+
+.custom-scroll .el-scrollbar__wrap {
+  overflow-x: hidden;
+}

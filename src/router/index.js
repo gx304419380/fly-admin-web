@@ -84,6 +84,12 @@ export const constantRoutes = [
         name: 'permission',
         component: () => import('@/views/system/permission/index'),
         meta: { title: '菜单管理', icon: 'lock' }
+      },
+      {
+        path: 'HelloWorld',
+        name: 'HelloWorld',
+        component: () => import('@/views/iframe/index'),
+        meta: { title: '后台动态iframe', icon: 'tree' }
       }
     ]
   },

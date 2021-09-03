@@ -10,7 +10,8 @@ export default {
     }
   },
   mounted() {
-    this.frameSrc = '/frame/1'
+    console.log(this.$route.path)
+    this.frameSrc = this.$route.path
   }
 }
 </script>

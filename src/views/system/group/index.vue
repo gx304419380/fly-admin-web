@@ -99,7 +99,9 @@ export default {
       }
       this.loadGroup = true
       GroupApi.getGroup(node.id).then(res => {
-        this.$refs.nodeForm.resetFields()
+        if (this.$refs.nodeForm) {
+          this.$refs.nodeForm.resetFields()
+        }
         this.currentNode = res.data
       }).finally(() => {
         this.loadGroup = false

@@ -4,7 +4,7 @@
       v-model="filterText"
       placeholder="输入关键字进行过滤"
     />
-    <div style="height: calc(100vh - 130px);">
+    <div v-loading="loadTree" style="height: calc(100vh - 130px);">
       <el-scrollbar class="custom-scroll">
         <el-tree
           ref="tree"
@@ -58,7 +58,8 @@ export default {
   data() {
     return {
       screenHeight: document.body.clientHeight,
-      filterText: ''
+      filterText: '',
+      loadTree: true
     }
   },
   watch: {
@@ -66,6 +67,7 @@ export default {
       this.$refs.tree.filter(val)
     },
     treeData(val) {
+      this.loadTree = false
       // 默认点击第一个
       this.$nextTick().then(() => {
         const checkNode = this.checkedId ? this.$refs['treeNode' + this.checkedId] : document.querySelector('.el-tree-node')

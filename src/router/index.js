@@ -91,7 +91,7 @@ export const constantRoutes = [
     path: '/dynamic',
     component: Layout,
     redirect: '/dynamic/frame1',
-    name: 'frame1',
+    name: 'dynamicFrame',
     meta: { title: '动态菜单', icon: 'el-icon-s-tools' },
     children: [
       {

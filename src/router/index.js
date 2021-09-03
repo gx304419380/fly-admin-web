@@ -87,6 +87,27 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/dynamic',
+    component: Layout,
+    redirect: '/dynamic/frame1',
+    name: 'frame1',
+    meta: { title: '动态菜单', icon: 'el-icon-s-tools' },
+    children: [
+      {
+        path: 'frame1',
+        name: 'frame1',
+        component: () => import('@/views/iframe/index'),
+        meta: { title: '菜单1', icon: 'tree' }
+      },
+      {
+        path: 'frame2',
+        name: 'frame2',
+        component: () => import('@/views/iframe/index'),
+        meta: { title: '菜单2', icon: 'tree' }
+      }
+    ]
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

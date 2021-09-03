@@ -1,13 +1,13 @@
 <template>
   <div class="app-container">
     <el-row style="height: 100%">
-      <el-col :span="6" style="padding-right: 20px;">
+      <el-col :span="6" style="padding-right: 20px;height: 100%">
         <group-tree
           :tree-data="treeData"
           @node-click="handleNodeChange"
         />
       </el-col>
-      <el-col :span="18" style="padding-left: 20px">
+      <el-col :span="18" style="padding-left: 20px; height: 100%">
         <el-form :inline="true" :model="condition" size="mini">
           <el-row>
             <el-form-item label="姓名">
@@ -29,7 +29,7 @@
           :data="userList"
           stripe
           border
-          :height="tableHeight"
+          height="calc(100vh - 180px)"
         >
           <el-table-column
             align="center"
@@ -69,6 +69,16 @@
             width="140"
           />
         </el-table>
+        <el-pagination
+          :current-page="condition.pageNo"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="condition.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          style="margin-top: 10px; text-align: right"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
       </el-col>
     </el-row>
   </div>
@@ -87,7 +97,7 @@ export default {
       treeNode: {},
       treeData: [],
       userList: [],
-      tableHeight: window.innerHeight - 160,
+      total: 0,
       condition: {
         groupId: null,
         pageNo: 1,
@@ -121,6 +131,12 @@ export default {
       }).finally(() => {
         this.loadUser = false
       })
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`)
     }
   }
 }

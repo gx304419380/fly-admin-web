@@ -1,29 +1,31 @@
 <template>
-  <div :style="{height: screenHeight - 100 + 'px', paddingBottom: '20px'}">
+  <div style="height: 100%;">
     <el-input
       v-model="filterText"
       placeholder="输入关键字进行过滤"
     />
-    <el-scrollbar class="custom-scroll">
-      <el-tree
-        ref="tree"
-        class="filter-tree"
-        :data="treeData"
-        :props="treeProps"
-        default-expand-all
-        :highlight-current="true"
-        :filter-node-method="filterNode"
-        :expand-on-click-node="false"
-        style="margin-top: 10px"
-        @node-click="handleNodeClick"
-      >
-        <span slot-scope="{ node, data }" class="custom-tree-node">
-          <span :ref="'treeNode' + data.id">
-            <i :class="generateIcon(data)" style="margin-right: 10px" />{{ node.label }}
+    <div style="height: calc(100vh - 130px);">
+      <el-scrollbar class="custom-scroll">
+        <el-tree
+          ref="tree"
+          class="filter-tree"
+          :data="treeData"
+          :props="treeProps"
+          default-expand-all
+          :highlight-current="true"
+          :filter-node-method="filterNode"
+          :expand-on-click-node="false"
+          style="margin-top: 10px;margin-right: 8px"
+          @node-click="handleNodeClick"
+        >
+          <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span :ref="'treeNode' + data.id">
+              <i :class="generateIcon(data)" style="margin-right: 10px" />{{ node.label }}
+            </span>
           </span>
-        </span>
-      </el-tree>
-    </el-scrollbar>
+        </el-tree>
+      </el-scrollbar>
+    </div>
   </div>
 </template>
 

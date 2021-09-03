@@ -1,60 +1,58 @@
 <template>
   <div class="app-container">
     <el-row style="height: 100%">
-      <el-col :span="6" style="padding-right: 20px;">
+      <el-col :span="6" style="padding-right: 20px;height: 100%">
         <group-tree
           :tree-data="treeData"
           :checked-id="checkedNodeId"
           @node-click="handleNodeChange"
         />
       </el-col>
-      <el-col :span="18">
-        <div style="padding-left: 20px;">
-          <div style="display: flex; justify-content: flex-end">
-            <span style="font-size: 18px; flex: 1; padding-top: 10px">节点详情</span>
-            <el-button v-if="treeNode.permissionType === 1" size="small" type="primary" @click="editNode">保存</el-button>
-            <el-button v-if="treeNode.permissionType === 1" size="small" type="success" @click="addChild">新增子节点</el-button>
-            <el-button v-if="treeNode.permissionType === 1 && treeNode.id !== 'ORG_ROOT'" type="danger" size="small" @click="deleteGroup">删除</el-button>
-          </div>
-          <el-divider />
-          <div :style="{height: screenHeight - 160 + 'px'}">
-            <el-scrollbar class="custom-scroll">
-              <el-form
-                ref="nodeForm"
-                v-loading="loadGroup"
-                :rules="groupRules"
-                :model="currentNode"
-                label-width="100"
-                label-position="left"
-                style="margin-right: 10px"
-              >
-                <el-form-item label="组织名称" prop="name">
-                  <el-input v-model="currentNode.name" maxlength="20" show-word-limit />
-                </el-form-item>
-                <el-form-item v-if="currentNode.id !== 'ORG_ROOT'" label="父节点">
-                  <el-input disabled :value="getParentName(currentNode)" />
-                </el-form-item>
-                <el-form-item label="路径">
-                  <el-input v-model="currentNode.namePath" disabled />
-                </el-form-item>
-                <el-form-item label="描述">
-                  <el-input v-model="currentNode.description" type="textarea" :row="4" maxlength="200" show-word-limit />
-                </el-form-item>
-              </el-form>
-            </el-scrollbar>
-          </div>
-          <el-drawer
-            title="新增子节点"
-            size="50%"
-            :visible.sync="addChildDrawer"
-            direction="rtl"
-            :before-close="closeChildDrawer"
-          >
-            <div style="padding: 20px">
-              <group-editor :parent="currentNode" @saveSuccess="addChildSuccess" />
-            </div>
-          </el-drawer>
+      <el-col :span="18" style="height: 100%">
+        <div style="display: flex; justify-content: flex-end">
+          <span style="font-size: 18px; flex: 1; padding-top: 10px">节点详情</span>
+          <el-button v-if="treeNode.permissionType === 1" size="small" type="primary" @click="editNode">保存</el-button>
+          <el-button v-if="treeNode.permissionType === 1" size="small" type="success" @click="addChild">新增子节点</el-button>
+          <el-button v-if="treeNode.permissionType === 1 && treeNode.id !== 'ORG_ROOT'" type="danger" size="small" @click="deleteGroup">删除</el-button>
         </div>
+        <el-divider />
+        <div style="height: calc(100vh - 150px);">
+          <el-scrollbar class="custom-scroll">
+            <el-form
+              ref="nodeForm"
+              v-loading="loadGroup"
+              :rules="groupRules"
+              :model="currentNode"
+              label-width="100"
+              label-position="left"
+              style="margin-right: 10px"
+            >
+              <el-form-item label="组织名称" prop="name">
+                <el-input v-model="currentNode.name" maxlength="20" show-word-limit />
+              </el-form-item>
+              <el-form-item v-if="currentNode.id !== 'ORG_ROOT'" label="父节点">
+                <el-input disabled :value="getParentName(currentNode)" />
+              </el-form-item>
+              <el-form-item label="路径">
+                <el-input v-model="currentNode.namePath" disabled />
+              </el-form-item>
+              <el-form-item label="描述">
+                <el-input v-model="currentNode.description" type="textarea" :row="4" maxlength="200" show-word-limit />
+              </el-form-item>
+            </el-form>
+          </el-scrollbar>
+        </div>
+        <el-drawer
+          title="新增子节点"
+          size="50%"
+          :visible.sync="addChildDrawer"
+          direction="rtl"
+          :before-close="closeChildDrawer"
+        >
+          <div style="padding: 20px">
+            <group-editor :parent="currentNode" @saveSuccess="addChildSuccess" />
+          </div>
+        </el-drawer>
       </el-col>
     </el-row>
   </div>

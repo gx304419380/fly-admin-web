@@ -35,7 +35,8 @@
             align="center"
             prop="name"
             label="姓名"
-            width="80"
+            fixed="left"
+            width="100"
           />
           <el-table-column
             align="center"
@@ -47,7 +48,7 @@
             align="center"
             prop="groupName"
             label="组织"
-            width="80"
+            width="140"
           />
           <el-table-column
             align="center"

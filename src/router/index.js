@@ -36,13 +36,11 @@ export const constantRoutes = [
     component: () => import('@/views/login/index'),
     hidden: true
   },
-
   {
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
@@ -53,6 +51,10 @@ export const constantRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: '首页', icon: 'dashboard' }
     }]
+  },
+  {
+    path: '/micro/*',
+    component: Layout
   },
   {
     path: '/system',
@@ -88,23 +90,19 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/micro/*',
-    component: Layout
-  },
-  {
-    path: '/micro',
+    path: '/testPath',
     component: Layout,
     redirect: '/micro/vue',
     name: 'childMenu',
-    meta: { title: '微前端菜单', icon: 'el-icon-s-tools' },
+    meta: { title: '微前端菜单-VUE', icon: 'el-icon-s-tools' },
     children: [
       {
-        path: 'vue',
+        path: '/micro/vue',
         name: 'vue',
         meta: { title: '菜单1', icon: 'tree' }
       },
       {
-        path: 'test2',
+        path: '/micro/vue/test',
         name: 'test2',
         meta: { title: '菜单2', icon: 'tree' }
       }

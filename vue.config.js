@@ -38,9 +38,12 @@ module.exports = {
     },
     // before: require('./mock/mock-server.js'),
     proxy: {
-      '/system': {
+      '/api': {
         target: 'http://localhost:8080',
-        changeOrigin: true // 开启代理服务器，
+        changeOrigin: true, // 开启代理服务器，
+        pathRewrite: {
+          '^/api': '/'
+        }
       }
     }
   },

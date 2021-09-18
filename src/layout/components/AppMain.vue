@@ -1,5 +1,6 @@
 <template>
   <section class="app-main">
+    <div id="appContainer" />
     <transition name="fade-transform" mode="out-in">
       <router-view :key="key" />
     </transition>

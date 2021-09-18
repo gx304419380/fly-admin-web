@@ -84,32 +84,28 @@ export const constantRoutes = [
         name: 'permission',
         component: () => import('@/views/system/permission/index'),
         meta: { title: '菜单管理', icon: 'lock' }
-      },
-      {
-        path: 'HelloWorld',
-        name: 'HelloWorld',
-        component: () => import('@/views/iframe/index'),
-        meta: { title: '后台动态iframe', icon: 'tree' }
       }
     ]
   },
   {
-    path: '/dynamic',
+    path: '/micro/*',
+    component: Layout
+  },
+  {
+    path: '/micro',
     component: Layout,
-    redirect: '/dynamic/frame1',
-    name: 'dynamicFrame',
-    meta: { title: '动态菜单', icon: 'el-icon-s-tools' },
+    redirect: '/micro/vue',
+    name: 'childMenu',
+    meta: { title: '微前端菜单', icon: 'el-icon-s-tools' },
     children: [
       {
-        path: 'frame1',
-        name: 'frame1',
-        component: () => import('@/views/iframe/index'),
+        path: 'vue',
+        name: 'vue',
         meta: { title: '菜单1', icon: 'tree' }
       },
       {
-        path: 'frame2',
-        name: 'frame2',
-        component: () => import('@/views/iframe/index'),
+        path: 'test2',
+        name: 'test2',
         meta: { title: '菜单2', icon: 'tree' }
       }
     ]
@@ -119,7 +115,7 @@ export const constantRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

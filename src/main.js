@@ -12,6 +12,8 @@ import router from './router'
 import '@/icons'
 // permission control
 import '@/permission'
+import { registerMicroApps, start } from 'qiankun'
+import { getMicroApps } from '@/api/microApp'
 
 /**
  * If you don't want to use mock-server
@@ -35,4 +37,11 @@ new Vue({
   router,
   store,
   render: h => h(App)
+})
+
+// 从后台获取所有注册的微前端
+getMicroApps().then(res => {
+  const apps = res.data
+  registerMicroApps(apps)
+  start({ prefetch: false })
 })
